@@ -1,7 +1,0 @@
-version: '6.0'
-services:
-  mongo:
-    image: mongo
-    ports:
-      - '27017:27017'
-
