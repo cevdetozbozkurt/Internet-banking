@@ -17,48 +17,30 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    private String activeId;
+    public String activeUsername;
+
     @PostMapping("/signIn")
     public String saveUser(@RequestBody User user){
         userRepository.save(user);
         return "User created, user id:" + user.getId();
     }
 
+
     @GetMapping("/getUsers")
     public List<User> getUsers(){
         return userRepository.findAll();
     }
 
-    @GetMapping("/findUser/{id}")
-    public Optional<User> getUserById(@PathVariable String id){
-        return userRepository.findById(id);
+    @GetMapping("/findUser/{username}")
+    public String getId(@PathVariable String username){
+        return userRepository.findByUserName(username).getId();
     }
-
 
     @DeleteMapping("/delete/{id}")
     public String deleteUser(@PathVariable String id){
         userRepository.deleteById(id);
         return "user deleted with id :" + id;
     }
-
-    /*
-    @PostConstruct
-    public void init(){
-        User user= new User();
-        user.setId("Çağatay");
-        user.setNumber("Yelin");
-        user.setPassword("28");
-
-    }
-
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-    @PostMapping
-
-    public ResponseEntity<User> addUser(@RequestBody User user){
-        return ResponseEntity.ok(userRepository.save(user));
-    }
-    */
-
 
 }
