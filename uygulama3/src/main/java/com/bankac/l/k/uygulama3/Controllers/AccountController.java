@@ -6,6 +6,7 @@ import com.bankac.l.k.uygulama3.Repositories.Account2Repo;
 import com.bankac.l.k.uygulama3.Repositories.AccountRepository;
 import com.bankac.l.k.uygulama3.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,19 +36,21 @@ public class AccountController {
             return "TCKN daha once kayitli oldugu icin islem basarisiz.";
         }
     }
+    boolean succesful;
 
+
+    //frontendden parametre alip atanacak
+    String Tckno="2";
+    String password = "123456";
     @PostMapping("/login")
     public String login(String Tckno, String password){
         List<Account2> accountList = account2Repo.findAll();
-        boolean succesful = false;
+        password = this.password;
+        Tckno = this.Tckno;
         for(Account2 account: accountList){
             if(account.getTCKN().equals(Tckno)  && account.getPassword().equals(password)){
                 activeAccount = account;
                 succesful = true;
-                return "true ya girdi";
-            }else{
-                succesful = false;
-                return "false a girdi";
             }
         }
         if (succesful){
@@ -57,25 +60,32 @@ public class AccountController {
         }
     }
 
-
-    @PostMapping("/sendmoney")
-    public String sendMoney(int money, Account2 sender ,Account2 buyer, String Iban){
-        activeAccount = sender;
-
+    //usttekinin aynisi
+    int money1 = 99;
+    @PutMapping("/sendmoney")
+    public String sendMoney(Account2 sender , Account2 buyer, String Iban, String money){
+        sender = activeAccount;
+        Iban = "TR 1234567890";
+        money = String.valueOf(money1);
         List<Account2> accountList = account2Repo.findAll();
         for(Account2 account: accountList){
             if(account.getIBAN().equals(Iban)){
                 buyer = account;
-                break;
+
             }
         }
-        if(sender.getBalance()>=money){
-            sender.setBalance(sender.getBalance()-money);
-            buyer.setBalance(sender.getBalance()+money);
+        System.out.println(buyer.getIBAN());
+        int money1=Integer.parseInt(money);
+        if(sender.getBalance() >= money1){
+            sender.setBalance(sender.getBalance()-money1);
+            buyer.setBalance(buyer.getBalance()+money1);
+            account2Repo.save(sender);
+            account2Repo.save(buyer);
             return "Mevcut bakiye: " + sender.getBalance();
         }else{
             return "Bakiyeniz yetersiz oldugu icin odeme gerceklestirilemedi.";
         }
+
     }
 
 
@@ -84,8 +94,10 @@ public class AccountController {
         return account2Repo.findAll();
     }
 
-    @GetMapping("/getAccount/{id}")
-    public String getAccountById(@RequestBody String id){
+    @GetMapping("/getAccount/{tckno}")
+    public String getAccountById(@RequestBody String tckno){
+
+        tckno = activeAccount.getTCKN();
         /*
         if(account2Repo.existsById(id)){
             return "Name: " + account2Repo.findById(id).get().getName() + "\n" +
@@ -99,11 +111,13 @@ public class AccountController {
         }
 
          */
-        return "Name: " + account2Repo.findById(id).get().getName() + "\n" +
-                "Surname: " + account2Repo.findById(id).get().getSurname()+ "\n"+
-                "Balance: " + account2Repo.findById(id).get().getBalance() + " TL" + "\n" +
-                "Debt: " + account2Repo.findById(id).get().getDebt() +" TL" + "\n" +
-                "IBAN: " + account2Repo.findById(id).get().getIBAN();
+        
+        //duzeltilecek ------>
+        return "Name: " + account2Repo.findById(tckno).get().getName() + "\n" +
+                "Surname: " + account2Repo.findById(tckno).get().getSurname()+ "\n"+
+                "Balance: " + account2Repo.findById(tckno).get().getBalance() + " TL" + "\n" +
+                "Debt: " + account2Repo.findById(tckno).get().getDebt() +" TL" + "\n" +
+                "IBAN: " + account2Repo.findById(tckno).get().getIBAN();
     }
 
     @DeleteMapping("/delete/{id}")

@@ -21,7 +21,7 @@ public class Account2 {
     private String TCKN;
     private String password;
     private String IBAN;
-    private float balance;
+    private int balance;
     private float debt;
 
 }
