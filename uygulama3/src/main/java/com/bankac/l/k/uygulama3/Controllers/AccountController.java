@@ -111,7 +111,7 @@ public class AccountController {
         }
 
          */
-        
+
         //duzeltilecek ------>
         return "Name: " + account2Repo.findById(tckno).get().getName() + "\n" +
                 "Surname: " + account2Repo.findById(tckno).get().getSurname()+ "\n"+
