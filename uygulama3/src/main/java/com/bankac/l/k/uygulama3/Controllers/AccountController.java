@@ -1,15 +1,15 @@
 package com.bankac.l.k.uygulama3.Controllers;
 
 import com.bankac.l.k.uygulama3.Entity.concretes.Account2;
-import com.bankac.l.k.uygulama3.Entity.concretes.User;
 import com.bankac.l.k.uygulama3.Repositories.Account2Repo;
-import com.bankac.l.k.uygulama3.Repositories.AccountRepository;
-import com.bankac.l.k.uygulama3.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import java.util.Random;
 
 import java.util.List;
+import java.util.Random;
 
 
 @RestController
@@ -19,8 +19,52 @@ public class AccountController {
     private Account2Repo account2Repo;
 
     private Account2 activeAccount;
+    Random random = new Random();
+
+    public String createIBAN(){
+        String Iban = "TR ";
+        for(int i = 0; i < 5; i++){
+            Iban += random.nextInt(10);
+
+        }
+        return Iban;
+    }
+
+
+    String name= "ahmet";
+    String surname = "ekmel";
+    String pass="123456";
+    String tckno="5";
+    String iban= "TR 27664";
+
+
     @PostMapping("/signin")
-    public String signIn(@RequestBody Account2 account2){
+    public String signIn(@RequestBody Account2 account2,String name,String surname, String password, String Tckno){
+        password= this.pass;
+        name=this.name;
+        surname=this.surname;
+        Tckno=this.tckno;
+
+        account2.setName(name);
+        account2.setSurname(surname);
+        account2.setPassword(password);
+        account2.setTCKN(Tckno);
+        account2.setIBAN(iban);
+        boolean existIban = true;
+        List<Account2> accountList1 = account2Repo.findAll();
+        int i=0;
+        while(existIban){
+                if (account2.getIBAN().equals(accountList1.get(i).getIBAN())) {
+                    existIban = true;
+                    account2.setIBAN(createIBAN());
+                    i = 0;
+                }else if(!account2.getIBAN().equals(accountList1.get(i).getIBAN()) && i< accountList1.size()-1){
+                    i++;
+                }else{
+                    existIban=false;
+                }
+        }
+
         boolean exist = false;
         List<Account2> accountList = account2Repo.findAll();
         for(Account2 account: accountList){
@@ -43,6 +87,7 @@ public class AccountController {
     String Tckno="2";
     String password = "123456";
     @PostMapping("/login")
+    @Bean
     public String login(String Tckno, String password){
         List<Account2> accountList = account2Repo.findAll();
         password = this.password;
