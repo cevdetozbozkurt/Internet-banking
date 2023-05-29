@@ -87,7 +87,6 @@ public class AccountController {
     String Tckno="2";
     String password = "123456";
     @PostMapping("/login")
-    @Bean
     public String login(String Tckno, String password){
         List<Account2> accountList = account2Repo.findAll();
         password = this.password;
@@ -105,7 +104,7 @@ public class AccountController {
         }
     }
 
-    //usttekinin aynisi
+    //frontendden parametre alip atanacak
     int money1 = 99;
     @PutMapping("/sendmoney")
     public String sendMoney(Account2 sender , Account2 buyer, String Iban, String money){
